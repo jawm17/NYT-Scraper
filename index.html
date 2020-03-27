@@ -20,24 +20,29 @@
         </div>
     </div>
 
+    <!-- User Input Section -->
     <div class="card">
         <div class="card-header">
             Search Parameters
         </div>
         <div class="card-body">
             <form>
+                <!-- Search Term -->
                 <div class="form-group">
                     <label for="exampleInputEmail1">Search Term:</label>
                     <input type="text" class="form-control" id="search" aria-describedby="emailHelp">
                 </div>
+                <!-- Number of articles -->
                 <div class="form-group">
                     <label for="exampleInputPassword1">Number of records to retrieve:</label>
                     <input type="text" class="form-control" id="number" value="5">
                 </div>
+                <!-- Start year -->
                 <div class="form-group">
                     <label for="exampleInputPassword1">Start Year (Optional):</label>
                     <input type="text" class="form-control" id="start">
                 </div>
+                <!-- End year -->
                 <div class="form-group">
                     <label for="exampleInputPassword1">End Year (Optional):</label>
                     <input type="text" class="form-control" id="end">
@@ -47,25 +52,33 @@
         </div>
     </div>
 
+    <!-- Article Section -->
     <div class="card">
         <div class="card-header">
             Top Articles
         </div>
         <div class="card-body" id="articles">
-
+            <!-- This is where the generated articles are placed -->
         </div>
     </div>
 
     <script>
+        // Submit button pressed
         $("#submit").click(function () {
             event.preventDefault();
             var queryString = "";
+
+            // clear article section
             var arcticleSection = $("#articles");
             arcticleSection.empty();
+
+            // get user inputs
             var searchTerm = $("#search").val();
             var recordNumber = $("#number").val();
             var start = $("#start").val();
             var end = $("#end").val();
+
+            // check if inputs are empty and append item to queryString if there aren't
             if (searchTerm != "") {
                 queryString += ("q=" + searchTerm + "&");
             }
@@ -75,18 +88,19 @@
             if (end != "") {
                 queryString += ("end_date=" + end + "1231" + "&");
             }
-            console.log(queryString);
+            // generate queryURL for API request
             var queryURL = "https://api.nytimes.com/svc/search/v2/articlesearch.json?" + queryString + "api-key=le0KAbtsGmrIbHcx26cSF1lU5Hpx2eMm";
+            
+            // API request
             $.ajax({
                 url: queryURL,
                 method: "GET"
             }).then(function (response) {
-                console.log(response);
+                // create new article recordNumber amount of times
                 for(var i = 0; i<recordNumber; i++){
                     var media = $("<div>");
-                    console.log(response.response.docs[i].headline.main);
-                    var preview = response.response.docs[i].abstract;
-                    media.html('<div class="media"><div class="media-body"><h5 class="mt-0"><a href="'+ response.response.docs[i].web_url +'"target=”_blank”>' + response.response.docs[i].headline.main + '</a></h5>' + preview + '</div></div>');
+                    // generate media with data from API to add to articleSection
+                    media.html('<div class="media"><div class="media-body"><h5 class="mt-0"><a href="'+ response.response.docs[i].web_url +'"target=”_blank”>' + response.response.docs[i].headline.main + '</a></h5>' + response.response.docs[i].abstract + '</div></div>');
                     arcticleSection.append(media);
                 }
             });
